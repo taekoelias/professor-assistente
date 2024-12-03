@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:15.3
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=professor_assistente
+    volumes:
+      - ./data:/var/lib/postgres/data
+  front:
+    build: ./front
+    entrypoint: ./.docker/entrypoint.sh
+    depends_on:
+      - back
+    ports:
+      - 3000:3000
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+      - API_URL=http://back:8080
+    volumes:
+      - ./front:/home/node/app
+  back:
+    build: ./server
+    entrypoint: ./.docker/entrypoint.sh
+    depends_on:
+      - db
+    ports:
+      - 3333:3333
+      - 5555:5555
+    environment:
+      - POSTGRES_URL=postgresql://db:5432/professor_assistente
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - ./server:/home/node/app
