@@ -2,23 +2,28 @@ import { z } from "zod";
 import { TipoTag } from "../../domain/tags.domain";
 import TagsRepository from "../../infra/repository/tags.repository";
 
-export class AddTagUsecase {
+export class UpdateTagUsecase {
   constructor(readonly repository: TagsRepository) {}
 
-  async execute(input: Input): Promise<Output> {
-    AddTagInputSchema.parse(input);
+  async execute(id: string, input: Input): Promise<Output> {
+    UpdateTagInputSchema.parse(input);
+
+    const tagOriginal = await this.repository.getById(id);
+    if (tagOriginal === undefined) throw new Error("Tag inexistente");
+    if (tagOriginal.tipo !== input.tipo)
+      throw new Error("Tag não associada ao tipo informado");
 
     const tags = await this.repository.getTagsByTipo(input.tipo);
     if (tags) {
-      const index = tags.findIndex(
+      const exists = tags.some(
         (tag) =>
-          tag.valor.toLocaleUpperCase() === input.valor.toLocaleUpperCase()
+          tag.valor.toLocaleUpperCase() === input.valor.toLocaleUpperCase() &&
+          tag.id !== id
       );
-      if (index !== -1) {
-        throw new Error("Tag já cadastrada");
-      }
+      if (exists) throw new Error("Já existente outra tag com o mesmo nome.");
+
       return this.repository
-        .add({
+        .update(id, {
           tipo: input.tipo,
           valor: input.valor,
           metadata:
@@ -26,33 +31,31 @@ export class AddTagUsecase {
               ? { background: input.background, font: input.font }
               : undefined,
         })
-        .then((data) => ({
-          id: data.id,
-          tipo: data.tipo,
-          valor: data.valor,
-          metadata: data.metadata
-            ? {
-                background: data.metadata?.background,
-                font: data.metadata?.font,
-              }
-            : undefined,
-        }));
+        .then(
+          (data) =>
+            ({
+              id: data.id,
+              tipo: data.tipo,
+              valor: data.valor,
+              metadata: data.metadata,
+            } as Output)
+        );
     } else {
       throw new Error("Tipo de tag inexistente");
     }
   }
 }
 
-export const AddTagInputSchema = z.object({
+export const UpdateTagInputSchema = z.object({
   tipo: z.nativeEnum(TipoTag, { message: "Tipo não preenchido" }),
   valor: z.string({ message: "Valor não preenchido" }),
   background: z.string().optional(),
   font: z.string().optional(),
 });
 
-type Input = z.infer<typeof AddTagInputSchema>;
+type Input = z.infer<typeof UpdateTagInputSchema>;
 
-export const AddTagOutputSchema = z.object({
+export const UpdateTagOutputSchema = z.object({
   id: z.string(),
   tipo: z.nativeEnum(TipoTag),
   valor: z.string(),
@@ -64,4 +67,4 @@ export const AddTagOutputSchema = z.object({
     .optional(),
 });
 
-type Output = z.infer<typeof AddTagOutputSchema>;
+type Output = z.infer<typeof UpdateTagOutputSchema>;

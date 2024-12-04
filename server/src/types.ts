@@ -1,6 +1,6 @@
-import { TagData } from "./domain/tags.domain";
+import { TagMetadata } from "./domain/tags.domain";
 declare global {
   namespace PrismaJson {
-    type TagDataType = TagData;
+    type TagDataType = TagMetadata;
   }
 }

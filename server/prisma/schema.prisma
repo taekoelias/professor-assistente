@@ -19,10 +19,12 @@ datasource db {
 
 model Tags {
   id String @id @default(uuid())
-  tipo String @unique
-  
+  tipo String
+  excluido Boolean @default(false)
+  valor String
   /// [TagDataType]
-  valores Json[]
+  metadata Json?
 
+  @@index([tipo])
   @@map("tags")
 }

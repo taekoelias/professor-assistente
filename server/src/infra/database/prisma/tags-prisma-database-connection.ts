@@ -3,28 +3,46 @@ import { prisma } from "../../../lib/prisma-client";
 import DatabaseConnection from "../database-connection";
 
 export class TagsPrismaDatabaseConnection implements DatabaseConnection<Tags> {
-  getAll(): Promise<Tags[]> {
-    return prisma.tags.findMany();
-  }
-  getOne(value: Partial<Tags>): Promise<Tags> {
-    return prisma.tags.findUniqueOrThrow({
+  getAll(value: Partial<Tags>): Promise<Tags[]> {
+    return prisma.tags.findMany({
       where: {
         tipo: value.tipo,
+        excluido: false,
       },
     });
   }
-  add(value: Tags): Promise<Tags> {
-    throw new Error("Method not implemented.");
+  getOne(id: string): Promise<Tags> {
+    return prisma.tags.findUniqueOrThrow({
+      where: {
+        id,
+        excluido: false,
+      },
+    });
   }
-  update(newValue: Tags): Promise<Tags> {
+  add(value: Omit<Tags, "id">): Promise<Tags> {
+    return prisma.tags.create({
+      data: value,
+    });
+  }
+  update(id: string, newValue: Omit<Tags, "id">): Promise<Tags> {
     return prisma.tags.update({
       data: newValue,
       where: {
+        id,
         tipo: newValue.tipo,
       },
     });
   }
-  delete(newValue: Tags): Promise<Tags> {
-    throw new Error("Method not implemented.");
+  delete(id: string): Promise<void> {
+    return prisma.tags
+      .update({
+        data: {
+          excluido: true,
+        },
+        where: {
+          id,
+        },
+      })
+      .then(() => {});
   }
 }

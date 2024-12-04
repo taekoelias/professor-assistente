@@ -1,9 +1,17 @@
-export type TagData = {
-  valor: string;
-  cor: string;
+export type TagMetadata = {
+  font: string;
+  background: string;
 };
 
+export enum TipoTag {
+  TEMA = "Tema",
+  ASSUNTO = "Assunto",
+  NIVEL = "Nível",
+}
+
 export interface Tags {
-  tipo: string;
-  valores: TagData[];
+  id: string;
+  tipo: TipoTag;
+  valor: string;
+  metadata?: Partial<TagMetadata>;
 }
