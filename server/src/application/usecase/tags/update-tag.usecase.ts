@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { TipoTag } from "../../domain/tags.domain";
-import TagsRepository from "../../infra/repository/tags.repository";
+import { TipoTag } from "../../../domain/tags.domain";
+import TagsRepository from "../../../infra/repository/tags.repository";
 
-export class UpdateTagUsecase {
+export default class UpdateTagUsecase {
   constructor(readonly repository: TagsRepository) {}
 
   async execute(id: string, input: Input): Promise<Output> {

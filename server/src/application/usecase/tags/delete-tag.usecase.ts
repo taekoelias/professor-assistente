@@ -1,6 +1,6 @@
-import TagsRepository from "../../infra/repository/tags.repository";
+import TagsRepository from "../../../infra/repository/tags.repository";
 
-export class DeleteTagUsecase {
+export default class DeleteTagUsecase {
   constructor(readonly repository: TagsRepository) {}
 
   async execute(id: string, tipo: string): Promise<void> {

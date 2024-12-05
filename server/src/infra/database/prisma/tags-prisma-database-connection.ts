@@ -6,7 +6,7 @@ export class TagsPrismaDatabaseConnection implements DatabaseConnection<Tags> {
   getAll(value: Partial<Tags>): Promise<Tags[]> {
     return prisma.tags.findMany({
       where: {
-        tipo: value.tipo,
+        ...value,
         excluido: false,
       },
     });

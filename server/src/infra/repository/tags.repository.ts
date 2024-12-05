@@ -18,7 +18,7 @@ export class TagsRepositoryPrismaDatabase implements TagsRepository {
       id: data.id,
       tipo: data.tipo as TipoTag,
       valor: data.valor,
-      metadata: data.metadata,
+      metadata: data.metadata ?? undefined,
     }));
   }
 
@@ -29,7 +29,7 @@ export class TagsRepositoryPrismaDatabase implements TagsRepository {
           id: tag.id,
           tipo: tag.tipo as TipoTag,
           valor: tag.valor,
-          metadata: tag.metadata,
+          metadata: tag.metadata ?? undefined,
         }));
       }
       return undefined;
@@ -43,7 +43,7 @@ export class TagsRepositoryPrismaDatabase implements TagsRepository {
           id: tag.id,
           tipo: tag.tipo as TipoTag,
           valor: tag.valor,
-          metadata: tag.metadata,
+          metadata: tag.metadata ?? undefined,
         }));
       }
       return [];
@@ -56,14 +56,14 @@ export class TagsRepositoryPrismaDatabase implements TagsRepository {
         tipo: tag.tipo.toString(),
         excluido: false,
         valor: tag.valor,
-        metadata: tag.metadata,
+        metadata: tag.metadata ?? null,
       })
       .then((data) => {
         return {
           id: data.id,
           tipo: data.tipo as TipoTag,
           valor: tag.valor,
-          metadata: tag.metadata,
+          metadata: tag.metadata ?? undefined,
         };
       });
   }
@@ -78,14 +78,14 @@ export class TagsRepositoryPrismaDatabase implements TagsRepository {
         tipo: tag.tipo.toString(),
         excluido: false,
         valor: tag.valor,
-        metadata: tag.metadata,
+        metadata: tag.metadata ?? null,
       })
       .then((data) => {
         return {
           id: data.id,
           tipo: data.tipo as TipoTag,
           valor: tag.valor,
-          metadata: tag.metadata,
+          metadata: tag.metadata ?? undefined,
         };
       });
   }
