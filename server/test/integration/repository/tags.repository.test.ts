@@ -16,11 +16,11 @@ class InMemoryDatabaseConnection implements DatabaseConnection<TagsEntity> {
 
     return Promise.resolve([]);
   }
-  getOne(id: string): Promise<TagsEntity> {
+  getOne(id: string): Promise<TagsEntity | null> {
     const item = this.database.find((item) => !item.excluido && item.id === id);
     if (item) return Promise.resolve(item);
 
-    return Promise.reject();
+    return Promise.resolve(null);
   }
   add(value: Omit<TagsEntity, "id">): Promise<TagsEntity> {
     const item = { ...value, id: randomUUID().toString() };
@@ -108,6 +108,23 @@ describe("Tags repository integation test", () => {
     expect(connection.database[0].valor).toBe(updatedTag.valor);
     expect(connection.database[0].metadata).toBeDefined();
     expect(connection.database[0].metadata).toBe(updatedTag.metadata);
+  });
+
+  test("Deve recuperar uma tag a partir do identificador", async () => {
+    const connection = new InMemoryDatabaseConnection();
+    const data = await connection.add({
+      tipo: TipoTag.TEMA,
+      valor: "test",
+      excluido: false,
+      metadata: null,
+    });
+    expect(connection.database.length).toBe(1);
+
+    const repository = new TagsRepositoryPrismaDatabase(connection);
+    const tags = await repository.getById(data.id);
+    expect(tags).toBeDefined();
+    expect(tags?.tipo).toBe(data.tipo);
+    expect(tags?.valor).toBe(data.valor);
   });
 
   test("Deve recuperar todas as tags", async () => {

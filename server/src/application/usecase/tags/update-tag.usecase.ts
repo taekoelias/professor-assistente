@@ -9,7 +9,8 @@ export default class UpdateTagUsecase {
     UpdateTagInputSchema.parse(input);
 
     const tagOriginal = await this.repository.getById(id);
-    if (tagOriginal === undefined) throw new Error("Tag inexistente");
+    if (tagOriginal === undefined || tagOriginal === null)
+      throw new Error("Tag inexistente");
     if (tagOriginal.tipo !== input.tipo)
       throw new Error("Tag não associada ao tipo informado");
 
@@ -21,28 +22,25 @@ export default class UpdateTagUsecase {
           tag.id !== id
       );
       if (exists) throw new Error("Já existente outra tag com o mesmo nome.");
-
-      return this.repository
-        .update(id, {
-          tipo: input.tipo,
-          valor: input.valor,
-          metadata:
-            input.background || input.font
-              ? { background: input.background, font: input.font }
-              : undefined,
-        })
-        .then(
-          (data) =>
-            ({
-              id: data.id,
-              tipo: data.tipo,
-              valor: data.valor,
-              metadata: data.metadata,
-            } as Output)
-        );
-    } else {
-      throw new Error("Tipo de tag inexistente");
     }
+    return this.repository
+      .update(id, {
+        tipo: input.tipo,
+        valor: input.valor,
+        metadata:
+          input.background || input.font
+            ? { background: input.background, font: input.font }
+            : undefined,
+      })
+      .then(
+        (data) =>
+          ({
+            id: data.id,
+            tipo: data.tipo,
+            valor: data.valor,
+            metadata: data.metadata,
+          } as Output)
+      );
   }
 }
 

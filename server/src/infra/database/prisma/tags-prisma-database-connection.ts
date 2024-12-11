@@ -11,8 +11,8 @@ export class TagsPrismaDatabaseConnection implements DatabaseConnection<Tags> {
       },
     });
   }
-  getOne(id: string): Promise<Tags> {
-    return prisma.tags.findUniqueOrThrow({
+  getOne(id: string): Promise<Tags | null> {
+    return prisma.tags.findUnique({
       where: {
         id,
         excluido: false,

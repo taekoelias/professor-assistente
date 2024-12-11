@@ -14,12 +14,16 @@ export default interface TagsRepository {
 export class TagsRepositoryPrismaDatabase implements TagsRepository {
   constructor(readonly connection: DatabaseConnection<TagsEntity>) {}
   getById(id: string): Promise<Tags | undefined> {
-    return this.connection.getOne(id).then((data) => ({
-      id: data.id,
-      tipo: data.tipo as TipoTag,
-      valor: data.valor,
-      metadata: data.metadata ?? undefined,
-    }));
+    return this.connection.getOne(id).then((data) =>
+      data != null
+        ? {
+            id: data.id,
+            tipo: data.tipo as TipoTag,
+            valor: data.valor,
+            metadata: data.metadata ?? undefined,
+          }
+        : undefined
+    );
   }
 
   getTagsByTipo(tipo: string): Promise<Tags[] | undefined> {

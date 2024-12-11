@@ -17,29 +17,27 @@ export default class AddTagUsecase {
       if (index !== -1) {
         throw new Error("Tag já cadastrada");
       }
-      return this.repository
-        .add({
-          tipo: input.tipo,
-          valor: input.valor,
-          metadata:
-            input.background || input.font
-              ? { background: input.background, font: input.font }
-              : undefined,
-        })
-        .then((data) => ({
-          id: data.id,
-          tipo: data.tipo,
-          valor: data.valor,
-          metadata: data.metadata
-            ? {
-                background: data.metadata?.background,
-                font: data.metadata?.font,
-              }
-            : undefined,
-        }));
-    } else {
-      throw new Error("Tipo de tag inexistente");
     }
+    return this.repository
+      .add({
+        tipo: input.tipo,
+        valor: input.valor,
+        metadata:
+          input.background || input.font
+            ? { background: input.background, font: input.font }
+            : undefined,
+      })
+      .then((data) => ({
+        id: data.id,
+        tipo: data.tipo,
+        valor: data.valor,
+        metadata: data.metadata
+          ? {
+              background: data.metadata?.background,
+              font: data.metadata?.font,
+            }
+          : undefined,
+      }));
   }
 }
 
