@@ -1,6 +1,7 @@
 import { Tags as TagsEntity } from "@prisma/client";
 import { randomUUID } from "crypto";
 import AddTags from "../../../src/application/usecase/tags/add-tag.usecase";
+import DeleteTags from "../../../src/application/usecase/tags/delete-tag.usecase";
 import UpdateTags from "../../../src/application/usecase/tags/update-tag.usecase";
 import { TipoTag } from "../../../src/domain/tags.domain";
 import DatabaseConnection from "../../../src/infra/database/database-connection";
@@ -186,5 +187,54 @@ describe("Tags use cases integation test", () => {
           valor: "teste1",
         })
     ).rejects.toThrow(new Error("Já existente outra tag com o mesmo nome."));
+  });
+  test("Deve lançar exceção ao remover tag não existente", async () => {
+    const connection = new InMemoryDatabaseConnection();
+    const repository = new TagsRepositoryPrismaDatabase(connection);
+    const usecase = new DeleteTags(repository);
+
+    const data = await connection.add({
+      tipo: TipoTag.TEMA,
+      valor: "teste",
+      excluido: false,
+      metadata: null,
+    });
+
+    expect(
+      async () => await usecase.execute("teste", TipoTag.TEMA)
+    ).rejects.toThrow(new Error("Tag inexistente"));
+  });
+  test("Deve lançar exceção ao remover tag não pertencente ao tipo de tag", async () => {
+    const connection = new InMemoryDatabaseConnection();
+    const repository = new TagsRepositoryPrismaDatabase(connection);
+    const usecase = new DeleteTags(repository);
+
+    const data = await connection.add({
+      tipo: TipoTag.TEMA,
+      valor: "teste",
+      excluido: false,
+      metadata: null,
+    });
+
+    expect(
+      async () => await usecase.execute(data.id, TipoTag.NIVEL)
+    ).rejects.toThrow(new Error("Tag não associada ao tipo informado"));
+  });
+  test("Deve remover tag apresentar tipo de tag e id validos", async () => {
+    const connection = new InMemoryDatabaseConnection();
+    const repository = new TagsRepositoryPrismaDatabase(connection);
+    const usecase = new DeleteTags(repository);
+
+    const data = await connection.add({
+      tipo: TipoTag.TEMA,
+      valor: "teste",
+      excluido: false,
+      metadata: null,
+    });
+
+    await usecase.execute(data.id, TipoTag.TEMA);
+
+    const item = await repository.getById(data.id);
+    expect(item).toBeUndefined();
   });
 });

@@ -25,6 +25,47 @@ model Tags {
   /// [TagDataType]
   metadata Json?
 
+  conteudos TagsConteudo[]
+
   @@index([tipo])
   @@map("tags")
+}
+
+model Conteudos {
+  id String @id @default(uuid())
+  excluido Boolean @default(false)
+  dataCriacao DateTime @default(now())
+  dataAlteracao DateTime @default(now())
+
+  itens ItensConteudo[]
+  tags TagsConteudo[]
+
+  @@map("conteudos")
+}
+
+model ItensConteudo {
+  id String @id @default(uuid())
+  valor String
+  tipo String
+  conteudoId String
+  descricao String?
+  metadados Json?
+  excluido Boolean @default(false)
+  
+  conteudo Conteudos @relation(fields: [conteudoId], references: [id])
+
+  @@map("conteudo_itens")
+}
+
+model TagsConteudo {
+  tagsId String
+  conteudoId String
+  tipoTag String
+
+  tags Tags @relation(fields: [tagsId], references: [id])
+  conteudos Conteudos @relation(fields: [conteudoId], references: [id])
+
+  @@id([tagsId, conteudoId])
+  @@index([tagsId])
+  @@map("conteudo_tags")
 }
