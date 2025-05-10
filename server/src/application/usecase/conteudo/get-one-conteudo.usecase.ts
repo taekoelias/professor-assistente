@@ -29,7 +29,7 @@ export default class GetAllConteudoUsecase {
   }
 }
 
-export const GetAllConteudoOutputSchema = z.object({
+export const GetOneConteudoOutputSchema = z.object({
   id: z.string().uuid(),
   items: z.array(
     z.object({
@@ -49,4 +49,4 @@ export const GetAllConteudoOutputSchema = z.object({
     .optional(),
 });
 
-type Output = z.infer<typeof GetAllConteudoOutputSchema>;
+type Output = z.infer<typeof GetOneConteudoOutputSchema>;

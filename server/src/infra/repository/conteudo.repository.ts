@@ -1,6 +1,6 @@
 import { ItensConteudo, TagsConteudo } from "@prisma/client";
-import { Conteudo } from "../../domain/conteudo.domain";
-import { TipoTag } from "../../domain/tags.domain";
+import { Conteudo, ConteudoItem } from "../../domain/conteudo.domain";
+import { Tags, TipoTag } from "../../domain/tags.domain";
 import DatabaseConnection from "../database/database-connection";
 import { ConteudoDatabase } from "../database/prisma/conteudo-prisma-database-connections";
 
@@ -16,7 +16,17 @@ export class ConteudoRepositoryPrismaDatabase implements ConteudoRepository {
   constructor(readonly connection: DatabaseConnection<ConteudoDatabase>) {}
 
   getById(id: string): Promise<Conteudo | undefined> {
-    throw new Error("Method not implemented.");
+    return this.connection.getOne(id).then((data) => {
+      return data != null
+        ? ({
+            id: data?.id,
+            assuntos: new Array<Tags>(),
+            niveis: new Array<Tags>(),
+            temas: new Array<Tags>(),
+            itens: new Array<ConteudoItem>(),
+          } as Conteudo)
+        : undefined;
+    });
   }
   getConteudos(): Promise<Conteudo[]> {
     return this.connection.getAll().then((data) =>

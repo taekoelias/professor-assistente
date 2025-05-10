@@ -4,6 +4,8 @@ import {
   TipoConteudoItem,
 } from "../../../domain/conteudo.domain";
 import { Tags, TipoTag } from "../../../domain/tags.domain";
+import ConteudoItemRepository from "../../../infra/repository/conteudo-item.repository";
+import ConteudoTagRepository from "../../../infra/repository/conteudo-tag.repository";
 import ConteudoRepository from "../../../infra/repository/conteudo.repository";
 import TagsRepository from "../../../infra/repository/tags.repository";
 import { fileToDataUrl } from "../../../utils/file-util";
@@ -11,6 +13,8 @@ import { fileToDataUrl } from "../../../utils/file-util";
 export default class UpdateConteudoUsecase {
   constructor(
     readonly repository: ConteudoRepository,
+    readonly conteudoItemRepository: ConteudoItemRepository,
+    readonly conteudoTagRepository: ConteudoTagRepository,
     readonly tagsRepository: TagsRepository
   ) {}
 
